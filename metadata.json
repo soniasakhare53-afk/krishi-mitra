@@ -1,0 +1,6 @@
+{
+  "name": "KrishiMitra",
+  "description": "AI-Powered Agricultural Machinery Rental & Smart Matching Platform connecting farmers with nearby farm machinery owners.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
