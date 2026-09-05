@@ -118,15 +118,82 @@ The request can be broadcast to nearby available machinery owners to help find a
 
 ## 🔄 How KrishiMitra Works
 
-```text
 FIND
-  ↓
+ ↓
 COMPARE
-  ↓
+ ↓
 AI MATCH
-  ↓
+ ↓
 BOOK
-  ↓
+ ↓
 TRACK
-  ↓
+ ↓
 RATE
+
+---
+
+---
+
+## 🌐 Multilingual Support
+
+KrishiMitra is designed to be accessible to farmers in their preferred language.
+
+The platform supports:
+
+- 🇬🇧 English
+- 🇮🇳 हिंदी (Hindi)
+- 🇮🇳 मराठी (Marathi)
+
+Users can switch between languages using the language selector available in the website navigation.
+
+The selected language is saved so that users can continue using KrishiMitra in their preferred language.
+
+This feature helps make machinery discovery, AI recommendations, booking, tracking, and emergency requests easier to understand for farmers.
+
+---
+
+## 🤖 AI Smart Machinery Match
+
+KrishiMitra provides an AI-powered smart matching experience to help farmers find suitable machinery.
+
+Farmers provide:
+
+- 🌾 Crop
+- 🔧 Required farming work
+- 📍 Location
+- 💰 Budget
+- 📅 Required date
+
+The system evaluates available machinery using factors such as:
+
+| Matching Factor | Weight |
+|---|---:|
+| Availability | 40% |
+| Price | 25% |
+| Distance | 20% |
+| Reliability | 15% |
+
+The platform presents the best available matches along with alternative recommendations.
+
+### 🎯 Explainable Recommendations
+
+Instead of simply displaying a machine, KrishiMitra helps explain why it is recommended.
+
+Example:
+
+```text
+🎯 Best Match
+
+Mahindra Tractor
+
+94% Match
+₹900/day
+5 km away
+Available for selected date
+
+Why this machine?
+
+✓ Available on your required date
+✓ Within your preferred budget
+✓ Close to your location
+✓ Good reliability rating
