@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   MACHINES: 'krishimitra_machines',
   BOOKINGS: 'krishimitra_bookings',
   CURRENT_USER: 'krishimitra_current_user',
+  AUTH_SESSION: 'krishimitra_auth_session',
   FAVOURITES: 'krishimitra_favourites',
   REVIEWS: 'krishimitra_reviews',
   EMERGENCY_REQUESTS: 'krishimitra_emergency_requests',
@@ -464,6 +465,21 @@ export function getCurrentUser(): User {
   return DEMO_FARMER;
 }
 
+export function isSessionActive(): boolean {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem(STORAGE_KEYS.AUTH_SESSION) === 'true';
+}
+
+export function setSessionActive(active: boolean): void {
+  if (typeof window === 'undefined') return;
+  if (active) {
+    localStorage.setItem(STORAGE_KEYS.AUTH_SESSION, 'true');
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
+  }
+  window.dispatchEvent(new Event('krishimitra_auth_change'));
+}
+
 export function loginUser(role: 'farmer' | 'owner', customUser?: Partial<User>): User {
   const base = role === 'farmer' ? DEMO_FARMER : DEMO_OWNER;
   const user: User = {
@@ -472,11 +488,13 @@ export function loginUser(role: 'farmer' | 'owner', customUser?: Partial<User>):
     role,
   };
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+  setSessionActive(true);
   window.dispatchEvent(new Event('krishimitra_user_change'));
   return user;
 }
 
 export function logoutUser(): void {
+  setSessionActive(false);
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(DEMO_FARMER));
   window.dispatchEvent(new Event('krishimitra_user_change'));
 }

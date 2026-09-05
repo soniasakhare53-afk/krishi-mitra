@@ -5,10 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRightLeft, UserCheck, LayoutDashboard } from 'lucide-react';
 
 export function DemoBanner() {
-  const { user, isFarmer, isOwner, loginAsDemoFarmer, loginAsDemoOwner } = useAuth();
+  const { user, isAuthenticated, isFarmer, isOwner, loginAsDemoFarmer, loginAsDemoOwner } = useAuth();
   const { t } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (collapsed) {
     return (

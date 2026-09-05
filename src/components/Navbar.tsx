@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export function Navbar() {
-  const { user, isFarmer, isOwner, logout, switchRole } = useAuth();
+  const { user, isAuthenticated, isFarmer, isOwner, logout, switchRole } = useAuth();
   const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -113,7 +113,7 @@ export function Navbar() {
             </Link>
 
             {/* Dashboard / User Section */}
-            {user ? (
+            {isAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
@@ -189,7 +189,7 @@ export function Navbar() {
                       onClick={() => {
                         logout();
                         setUserDropdownOpen(false);
-                        navigate('/');
+                        navigate('/login');
                       }}
                       className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 cursor-pointer font-semibold"
                     >
@@ -205,13 +205,13 @@ export function Navbar() {
                   to="/login"
                   className="px-3 py-1.5 text-xs font-bold text-stone-700 hover:text-emerald-800 hover:bg-stone-50 rounded-xl transition-colors"
                 >
-                  {t('nav.login', 'Login')}
+                  {t('login.signIn', 'Sign In')}
                 </Link>
                 <Link
                   to="/login"
                   className="px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 rounded-xl shadow-xs transition-colors"
                 >
-                  {t('nav.getStarted', 'Get Started')}
+                  {t('login.continueAsDemo', 'Demo Access')}
                 </Link>
               </div>
             )}
@@ -292,21 +292,44 @@ export function Navbar() {
               🚨 {t('nav.emergencyBroadcast', 'Emergency Request')}
             </Link>
 
-            <div className="flex gap-2 pt-1">
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2.5 px-4 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50"
-              >
-                {t('nav.login', 'Login')} / {t('nav.signUp', 'Sign Up')}
-              </Link>
-              <Link
-                to="/find-machinery"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2.5 px-4 rounded-xl bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 shadow-sm"
-              >
-                {t('nav.getStarted', 'Get Started')}
-              </Link>
+            <div className="pt-1">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 px-3 py-2 bg-stone-50 rounded-xl border border-stone-200">
+                    <p className="text-xs font-bold text-stone-900 truncate">{user.name}</p>
+                    <p className="text-[10px] text-emerald-700 font-semibold">{isFarmer ? '👨‍🌾 Farmer' : '🚜 Owner'}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                      navigate('/login');
+                    }}
+                    className="px-3 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>{t('nav.logout', 'Sign Out')}</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2.5 px-4 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50"
+                  >
+                    {t('login.signIn', 'Sign In')}
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2.5 px-4 rounded-xl bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 shadow-sm"
+                  >
+                    {t('login.continueAsDemo', 'Demo Access')}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
