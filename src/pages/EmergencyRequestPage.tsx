@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { createEmergencyRequest, getEmergencyRequests } from '../services/storage';
+import { useLanguage } from '../context/LanguageContext';
+import { createEmergencyRequest } from '../services/storage';
 import { EmergencyRequest } from '../types';
 import {
   AlertTriangle,
   Radio,
   Phone,
-  Clock,
   MapPin,
   CheckCircle2,
-  XCircle,
-  Tractor,
-  Send,
-  Sparkles,
   ShieldCheck,
-  RefreshCw,
 } from 'lucide-react';
 
 export function EmergencyRequestPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   const [workRequired, setWorkRequired] = useState('Urgent Harvesting before Rain');
   const [location, setLocation] = useState(user.location || 'Nagpur, Maharashtra');
@@ -50,8 +46,8 @@ export function EmergencyRequestPage() {
       setIsBroadcasting(false);
       setBroadcastDone(true);
       showToast(
-        'Emergency Broadcast Live!',
-        '3 nearby machinery owners in a 10 km cluster responded to your broadcast.',
+        t('emergency.broadcastLive', 'Emergency Broadcast Live!'),
+        t('emergency.broadcastLiveDesc', '3 nearby machinery owners in a 10 km cluster responded to your broadcast.'),
         'success',
         6000
       );
@@ -65,14 +61,13 @@ export function EmergencyRequestPage() {
         <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-black uppercase tracking-wider border border-rose-300">
             <AlertTriangle className="w-4 h-4 text-rose-600 animate-pulse" />
-            <span>High-Priority Farm Dispatch</span>
+            <span>{t('emergency.priorityBadge', 'High-Priority Farm Dispatch')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
-            Emergency Machinery Request
+            {t('nav.emergencyRequest', 'Emergency Machinery Request')}
           </h1>
           <p className="text-stone-600 text-sm sm:text-base">
-            Facing sudden rain forecasts, broken farm machinery, or critical sowing windows? Broadcast an urgent call
-            to all machinery owners within a 15 km radius.
+            {t('emergency.pageSubtitle', 'Facing sudden rain forecasts, broken farm machinery, or critical sowing windows? Broadcast an urgent call to all machinery owners within a 15 km radius.')}
           </p>
         </div>
 
@@ -81,10 +76,10 @@ export function EmergencyRequestPage() {
           <div className="bg-gradient-to-r from-rose-900 via-rose-950 to-stone-900 text-white p-6 sm:p-8">
             <h2 className="text-xl font-black text-white flex items-center gap-2">
               <Radio className="w-5 h-5 text-rose-400 animate-pulse" />
-              <span>Broadcast Parameters</span>
+              <span>{t('emergency.paramsTitle', 'Broadcast Parameters')}</span>
             </h2>
             <p className="text-xs text-rose-200 mt-1">
-              Your contact and farm coordinates will be beamed instantly to registered tractor & harvester owners.
+              {t('emergency.paramsDesc', 'Your contact and farm coordinates will be beamed instantly to registered tractor & harvester owners.')}
             </p>
           </div>
 
@@ -93,7 +88,7 @@ export function EmergencyRequestPage() {
               {/* Work Required */}
               <div>
                 <label htmlFor="emergency-work-needed" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Urgent Work Required *
+                  {t('emergency.urgentWorkNeeded', 'Urgent Work Required')} *
                 </label>
                 <select
                   id="emergency-work-needed"
@@ -101,18 +96,18 @@ export function EmergencyRequestPage() {
                   onChange={e => setWorkRequired(e.target.value)}
                   className="w-full text-sm p-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-rose-600 outline-none bg-white font-semibold"
                 >
-                  <option value="Urgent Harvesting before Rain">Urgent Harvesting before Rain 🌾</option>
-                  <option value="Breakdown Tractor Replacement">Breakdown Tractor Replacement 🚜</option>
-                  <option value="Emergency Sowing Window">Emergency Sowing Window 🌱</option>
-                  <option value="Urgent Paddy Puddling">Urgent Paddy Puddling 💧</option>
-                  <option value="Emergency Land Levelling">Emergency Land Levelling / Ditching 🛠️</option>
+                  <option value="Urgent Harvesting before Rain">🌾 {t('emergency.optHarvest', 'Urgent Harvesting before Rain')}</option>
+                  <option value="Breakdown Tractor Replacement">🚜 {t('emergency.optTractor', 'Breakdown Tractor Replacement')}</option>
+                  <option value="Emergency Sowing Window">🌱 {t('emergency.optSowing', 'Emergency Sowing Window')}</option>
+                  <option value="Urgent Paddy Puddling">💧 {t('emergency.optPuddling', 'Urgent Paddy Puddling')}</option>
+                  <option value="Emergency Land Levelling">🛠️ {t('emergency.optLevelling', 'Emergency Land Levelling / Ditching')}</option>
                 </select>
               </div>
 
               {/* Location */}
               <div>
                 <label htmlFor="emergency-farm-location" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Farm Location / Tehsil *
+                  {t('emergency.locationLabel', 'Farm Location / Tehsil')} *
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
@@ -132,7 +127,7 @@ export function EmergencyRequestPage() {
               {/* Farm Area */}
               <div>
                 <label htmlFor="emergency-farm-area" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Farm Area (Acres) *
+                  {t('dash.totalFarmArea', 'Farm Area (Acres)')} *
                 </label>
                 <input
                   id="emergency-farm-area"
@@ -149,7 +144,7 @@ export function EmergencyRequestPage() {
               {/* Required Time */}
               <div>
                 <label htmlFor="emergency-arrival-time" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Required Arrival Time *
+                  {t('emergency.arrivalTime', 'Required Arrival Time')} *
                 </label>
                 <select
                   id="emergency-arrival-time"
@@ -157,16 +152,16 @@ export function EmergencyRequestPage() {
                   onChange={e => setRequiredTime(e.target.value)}
                   className="w-full text-sm p-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-rose-600 outline-none bg-white font-medium"
                 >
-                  <option value="Immediate / Within 2 Hours">Immediate (Within 2 Hours)</option>
-                  <option value="Today Evening (Before 6 PM)">Today Evening (Before 6 PM)</option>
-                  <option value="Tomorrow Early Morning (6 AM)">Tomorrow Early Morning (6 AM)</option>
+                  <option value="Immediate / Within 2 Hours">{t('emergency.immediate2h', 'Immediate (Within 2 Hours)')}</option>
+                  <option value="Today Evening (Before 6 PM)">{t('emergency.todayEvening', 'Today Evening (Before 6 PM)')}</option>
+                  <option value="Tomorrow Early Morning (6 AM)">{t('emergency.tomorrowMorning', 'Tomorrow Early Morning (6 AM)')}</option>
                 </select>
               </div>
 
               {/* Contact Phone */}
               <div>
                 <label htmlFor="emergency-contact-number" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Emergency Phone Call *
+                  {t('emergency.phoneLabel', 'Emergency Phone Call')} *
                 </label>
                 <input
                   id="emergency-contact-number"
@@ -183,7 +178,7 @@ export function EmergencyRequestPage() {
             <div className="pt-3 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
               <span className="text-xs text-stone-500 flex items-center gap-1">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Encrypted alert sent to registered local owners with sirens enabled.</span>
+                <span>{t('emergency.shieldNotice', 'Encrypted alert sent to registered local owners with sirens enabled.')}</span>
               </span>
 
               <button
@@ -192,7 +187,7 @@ export function EmergencyRequestPage() {
                 className="w-full sm:w-auto px-8 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-sm rounded-xl shadow-lg shadow-rose-950/20 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
               >
                 <Radio className={`w-4 h-4 text-amber-300 ${isBroadcasting ? 'animate-spin' : 'animate-pulse'}`} />
-                <span>{isBroadcasting ? 'Broadcasting to 15km...' : 'Broadcast Emergency Request'}</span>
+                <span>{isBroadcasting ? t('emergency.broadcastingStatus', 'Broadcasting to 15km...') : t('emergency.broadcastButton', 'Broadcast Emergency Request')}</span>
               </button>
             </div>
           </form>
@@ -208,29 +203,29 @@ export function EmergencyRequestPage() {
               </div>
             </div>
             <h3 className="text-xl font-black text-white">
-              "Broadcasting request to nearby machinery owners..."
+              "{t('emergency.radarTitle', 'Broadcasting request to nearby machinery owners...')}"
             </h3>
             <p className="text-xs text-stone-400 max-w-sm mx-auto">
-              Scanning 14 active GPS telemetry nodes within 15 km of {location}...
+              {t('emergency.scanningNodes', 'Scanning 14 active GPS telemetry nodes within 15 km of')} {location}...
             </p>
           </div>
         )}
 
-        {/* Simulated Response Cluster (Section 26 Requirements) */}
+        {/* Simulated Response Cluster */}
         {broadcastDone && activeRequest && (
           <div className="bg-white rounded-3xl border border-emerald-300 shadow-2xl p-6 sm:p-8 space-y-6 animate-in slide-in-from-bottom-5 duration-300">
             <div className="flex items-center justify-between flex-wrap gap-2 border-b border-stone-100 pb-4">
               <div>
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full mb-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Broadcast Broadcasted to 15 km Cluster</span>
+                  <span>{t('emergency.broadcastDoneBadge', 'Broadcast Dispatched to 15 km Cluster')}</span>
                 </div>
                 <h3 className="text-2xl font-black text-stone-900">
-                  3 Local Equipment Providers Responded
+                  {t('emergency.providersResponded', '3 Local Equipment Providers Responded')}
                 </h3>
               </div>
               <span className="text-xs text-stone-400 font-mono">
-                Req ID: #{activeRequest.id}
+                {t('book.idLabel', 'Req ID')}: #{activeRequest.id}
               </span>
             </div>
 
@@ -261,14 +256,14 @@ export function EmergencyRequestPage() {
                               isAvail ? 'bg-emerald-200 text-emerald-900' : 'bg-rose-100 text-rose-800'
                             }`}
                           >
-                            {isAvail ? '🟢 Available' : '🔴 Busy'}
+                            {isAvail ? `🟢 ${t('owner.available', 'Available')}` : `🔴 ${t('owner.busy', 'Busy')}`}
                           </span>
                         </div>
                         <p className="text-xs text-stone-600 mt-0.5">
-                          Machine: <strong>{resp.machine}</strong> • Proximity: {resp.distance}
+                          {t('details.machinery', 'Machine')}: <strong>{resp.machine}</strong> • {t('card.proximity', 'Proximity')}: {resp.distance}
                         </p>
                         <div className="text-xs font-bold text-emerald-900 mt-1">
-                          Standard Emergency Rate: {resp.rate}
+                          {t('emergency.standardRate', 'Standard Emergency Rate')}: {resp.rate}
                         </div>
                       </div>
                     </div>
@@ -280,11 +275,11 @@ export function EmergencyRequestPage() {
                           className="px-5 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-2"
                         >
                           <Phone className="w-3.5 h-3.5 text-amber-300" />
-                          <span>Call & Dispatch Now</span>
+                          <span>{t('emergency.callDispatch', 'Call & Dispatch Now')}</span>
                         </a>
                       ) : (
                         <span className="text-xs text-stone-400 font-semibold px-3 py-1 bg-stone-200 rounded-lg">
-                          Occupied in Field
+                          {t('emergency.occupiedInField', 'Occupied in Field')}
                         </span>
                       )}
                     </div>

@@ -2,18 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 import { addMachine } from '../services/storage';
 import { MachineType } from '../types';
 import {
   Tractor,
   CheckCircle2,
-  DollarSign,
-  MapPin,
-  Image as ImageIcon,
-  Sparkles,
   ShieldCheck,
-  Fuel,
-  Calendar,
 } from 'lucide-react';
 
 const PRESET_IMAGES: Record<MachineType, string> = {
@@ -29,6 +24,7 @@ const PRESET_IMAGES: Record<MachineType, string> = {
 export function RentMachineryPage() {
   const { user, loginAsDemoOwner } = useAuth();
   const { showToast } = useToast();
+  const { t, translateMachineType } = useLanguage();
   const navigate = useNavigate();
 
   // Form states
@@ -43,7 +39,7 @@ export function RentMachineryPage() {
   const [hourlyRate, setHourlyRate] = useState<number>(850);
   const [dailyRate, setDailyRate] = useState<number>(5500);
   const [location, setLocation] = useState(user.location || 'Nagpur, Maharashtra');
-  const [distanceKm, setDistanceKm] = useState<number>(3.5);
+  const [distanceKm] = useState<number>(3.5);
   const [availableDates, setAvailableDates] = useState<string>('2026-09-05, 2026-09-06, 2026-09-07');
   const [imageUrl, setImageUrl] = useState<string>(PRESET_IMAGES['Tractor']);
   const [hp, setHp] = useState('44 HP');
@@ -87,7 +83,7 @@ export function RentMachineryPage() {
         .map(w => w.trim())
         .filter(Boolean);
 
-      const newMachine = addMachine({
+      addMachine({
         name: machineName,
         model: machineModel,
         type: machineType,
@@ -117,8 +113,8 @@ export function RentMachineryPage() {
       });
 
       showToast(
-        'Machine Listed Successfully!',
-        'Your machine has been successfully listed on KrishiMitra and is now live.',
+        t('rent.successTitle', 'Machine Listed Successfully!'),
+        t('rent.successDesc', 'Your machine has been successfully listed on KrishiMitra and is now live.'),
         'success',
         5000
       );
@@ -130,7 +126,7 @@ export function RentMachineryPage() {
       navigate('/owner-dashboard');
     } catch (err) {
       console.error(err);
-      showToast('Listing Failed', 'Please verify your inputs and try again.', 'error');
+      showToast(t('rent.failedTitle', 'Listing Failed'), t('rent.failedDesc', 'Please verify your inputs and try again.'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -143,23 +139,22 @@ export function RentMachineryPage() {
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
             <Tractor className="w-4 h-4 text-emerald-700" />
-            <span>Earn Additional Seasonal Farm Income</span>
+            <span>{t('rent.badge', 'Earn Additional Seasonal Farm Income')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
-            Rent Out Your Machinery
+            {t('nav.rentMachinery', 'Rent Out Your Machinery')}
           </h1>
           <p className="text-stone-600 text-sm sm:text-base">
-            "Turn your idle farm equipment into additional income." Connect with verified farmers in your cluster
-            during idle tractor days.
+            "{t('rent.subtitle', 'Turn your idle farm equipment into additional income. Connect with verified farmers in your cluster during idle tractor days.')}"
           </p>
         </div>
 
         {/* Form Container */}
         <div className="bg-white rounded-3xl border border-stone-200 shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-900 to-emerald-950 text-white p-6 sm:p-8">
-            <h2 className="text-xl font-black text-white">Machinery Registration Details</h2>
+            <h2 className="text-xl font-black text-white">{t('rent.formTitle', 'Machinery Registration Details')}</h2>
             <p className="text-xs text-emerald-200 mt-1">
-              Your equipment will immediately appear on the Find Machinery marketplace and your Owner Dashboard.
+              {t('rent.formDesc', 'Your equipment will immediately appear on the Find Machinery marketplace and your Owner Dashboard.')}
             </p>
           </div>
 
@@ -167,12 +162,12 @@ export function RentMachineryPage() {
             {/* Owner Details */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 border-b border-stone-200 pb-1">
-                1. Owner & Contact Information
+                1. {t('rent.section1', 'Owner & Contact Information')}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="owner-name" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Owner Name *
+                    {t('card.owner', 'Owner Name')} *
                   </label>
                   <input
                     id="owner-name"
@@ -185,7 +180,7 @@ export function RentMachineryPage() {
                 </div>
                 <div>
                   <label htmlFor="owner-phone" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Phone Number *
+                    {t('dash.mobileNumber', 'Phone Number')} *
                   </label>
                   <input
                     id="owner-phone"
@@ -202,13 +197,13 @@ export function RentMachineryPage() {
             {/* Machine Classification */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 border-b border-stone-200 pb-1">
-                2. Machine Classification & Details
+                2. {t('rent.section2', 'Machine Classification & Details')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="machine-type" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Machine Type *
+                    {t('card.machineType', 'Machine Type')} *
                   </label>
                   <select
                     id="machine-type"
@@ -216,19 +211,19 @@ export function RentMachineryPage() {
                     onChange={e => handleTypeChange(e.target.value as MachineType)}
                     className="w-full text-sm p-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-emerald-600 outline-none bg-white font-semibold"
                   >
-                    <option value="Tractor">🚜 Tractor</option>
-                    <option value="Harvester">🌾 Harvester</option>
-                    <option value="Seed Drill">🌱 Seed Drill</option>
-                    <option value="Rotavator">🔄 Rotavator</option>
-                    <option value="Cultivator">🌿 Cultivator</option>
-                    <option value="Irrigation">💧 Irrigation Equipment</option>
-                    <option value="Other">🛠️ Other Farm Equipment</option>
+                    <option value="Tractor">🚜 {translateMachineType('Tractor')}</option>
+                    <option value="Harvester">🌾 {translateMachineType('Harvester')}</option>
+                    <option value="Seed Drill">🌱 {translateMachineType('Seed Drill')}</option>
+                    <option value="Rotavator">🔄 {translateMachineType('Rotavator')}</option>
+                    <option value="Cultivator">🌿 {translateMachineType('Cultivator')}</option>
+                    <option value="Irrigation">💧 {translateMachineType('Irrigation')}</option>
+                    <option value="Other">🛠️ {translateMachineType('Other')}</option>
                   </select>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="machine-name" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Machine Brand & Name *
+                    {t('rent.brandName', 'Machine Brand & Name')} *
                   </label>
                   <input
                     id="machine-name"
@@ -245,7 +240,7 @@ export function RentMachineryPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label htmlFor="machine-model" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Model / Sub-model
+                    {t('details.model', 'Model / Sub-model')}
                   </label>
                   <input
                     id="machine-model"
@@ -258,7 +253,7 @@ export function RentMachineryPage() {
                 </div>
                 <div>
                   <label htmlFor="machine-hp" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Power / HP Spec
+                    {t('card.power', 'Power / HP Spec')}
                   </label>
                   <input
                     id="machine-hp"
@@ -271,7 +266,7 @@ export function RentMachineryPage() {
                 </div>
                 <div>
                   <label htmlFor="machine-fuel" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Fuel / Drive Type
+                    {t('details.fuelType', 'Fuel / Drive Type')}
                   </label>
                   <input
                     id="machine-fuel"
@@ -286,7 +281,7 @@ export function RentMachineryPage() {
 
               <div>
                 <label htmlFor="machine-desc" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Machine Description *
+                  {t('details.equipmentOverview', 'Machine Description')} *
                 </label>
                 <textarea
                   id="machine-desc"
@@ -300,7 +295,7 @@ export function RentMachineryPage() {
 
               <div>
                 <label htmlFor="machine-work" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Suitable Agricultural Tasks (comma separated)
+                  {t('details.suitableWork', 'Suitable Agricultural Tasks (comma separated)')}
                 </label>
                 <input
                   id="machine-work"
@@ -316,13 +311,13 @@ export function RentMachineryPage() {
             {/* Rental Rates & Location */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 border-b border-stone-200 pb-1">
-                3. Rental Pricing & Location
+                3. {t('rent.section3', 'Rental Pricing & Location')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="hourly-rate" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Rental Price / Hour (₹) *
+                    {t('rent.pricePerHour', 'Rental Price / Hour (₹)')} *
                   </label>
                   <div className="relative">
                     <span className="absolute left-3.5 top-2.5 text-sm font-bold text-stone-400">₹</span>
@@ -341,7 +336,7 @@ export function RentMachineryPage() {
 
                 <div>
                   <label htmlFor="daily-rate" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Rental Price / Full Day (₹) *
+                    {t('rent.pricePerDay', 'Rental Price / Full Day (₹)')} *
                   </label>
                   <div className="relative">
                     <span className="absolute left-3.5 top-2.5 text-sm font-bold text-stone-400">₹</span>
@@ -362,7 +357,7 @@ export function RentMachineryPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="machine-location" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Machinery Yard Location *
+                    {t('rent.yardLocation', 'Machinery Yard Location')} *
                   </label>
                   <input
                     id="machine-location"
@@ -376,7 +371,7 @@ export function RentMachineryPage() {
                 </div>
                 <div>
                   <label htmlFor="available-dates" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                    Available Dates (comma separated)
+                    {t('rent.availableDates', 'Available Dates (comma separated)')}
                   </label>
                   <input
                     id="available-dates"
@@ -393,12 +388,12 @@ export function RentMachineryPage() {
             {/* Photo / Image */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 border-b border-stone-200 pb-1">
-                4. Machine Photo
+                4. {t('rent.section4', 'Machine Photo')}
               </h3>
 
               <div>
                 <label htmlFor="machine-image-url" className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">
-                  Image URL (Pre-loaded with high-res preset)
+                  {t('rent.imageUrl', 'Image URL (Pre-loaded with high-res preset)')}
                 </label>
                 <div className="flex items-center gap-3">
                   <input
@@ -422,7 +417,7 @@ export function RentMachineryPage() {
             <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-stone-500 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                <span>Zero commission prototype listing. Immediate marketplace visibility.</span>
+                <span>{t('rent.zeroCommission', 'Zero commission prototype listing. Immediate marketplace visibility.')}</span>
               </div>
 
               <button
@@ -431,7 +426,7 @@ export function RentMachineryPage() {
                 className="w-full sm:w-auto px-8 py-3.5 bg-emerald-800 hover:bg-emerald-900 text-white font-black text-sm rounded-xl shadow-md transition-all hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>{isSubmitting ? 'Publishing Listing...' : 'List My Machine'}</span>
+                <span>{isSubmitting ? t('btn.loading', 'Publishing Listing...') : t('rent.listButton', 'List My Machine')}</span>
               </button>
             </div>
           </form>

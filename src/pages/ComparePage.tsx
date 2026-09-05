@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCompare } from '../context/CompareContext';
+import { useLanguage } from '../context/LanguageContext';
 import { getMachines } from '../services/storage';
 import { calculateSmartMatch } from '../services/smartMatch';
 import { Machine } from '../types';
@@ -10,24 +11,19 @@ import {
   Layers,
   ArrowLeft,
   Trash2,
-  Check,
   X,
   Sparkles,
   Star,
   MapPin,
-  Clock,
-  DollarSign,
-  Fuel,
-  ShieldCheck,
   Plus,
   ArrowRight,
   Award,
-  Zap,
   CheckCircle2,
 } from 'lucide-react';
 
 export function ComparePage() {
   const { comparedMachines, removeFromCompare, clearCompare, addToCompare } = useCompare();
+  const { t, translateMachineType, translateWorkType } = useLanguage();
   const navigate = useNavigate();
   const allMachines = getMachines().filter(m => m.active);
 
@@ -73,16 +69,16 @@ export function ComparePage() {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Find Machinery</span>
+            <span>{t('compare.backToFleet', 'Back to Find Machinery')}</span>
           </Link>
 
           {comparedMachines.length > 0 && (
             <button
               onClick={clearCompare}
-              className="text-xs font-semibold text-stone-500 hover:text-rose-600 transition-colors flex items-center gap-1"
+              className="text-xs font-semibold text-stone-500 hover:text-rose-600 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear Comparison ({comparedMachines.length})</span>
+              <span>{t('compare.clear', 'Clear Comparison')} ({comparedMachines.length})</span>
             </button>
           )}
         </div>
@@ -91,13 +87,13 @@ export function ComparePage() {
         <div className="mb-8 space-y-1.5">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
             <Layers className="w-4 h-4 text-amber-500" />
-            <span>Side-by-Side Equipment Evaluation</span>
+            <span>{t('compare.subtitle', 'Side-by-Side Equipment Evaluation')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
-            Compare Farm Machinery
+            {t('compare.title', 'Compare Farm Machinery')}
           </h1>
           <p className="text-stone-600 text-sm max-w-2xl">
-            Evaluate technical specifications, transparent AI match ratings, pricing, and availability side-by-side to choose the optimal implement for your farm.
+            {t('compare.description', 'Evaluate technical specifications, transparent AI match ratings, pricing, and availability side-by-side to choose the optimal implement for your farm.')}
           </p>
         </div>
 
@@ -108,16 +104,16 @@ export function ComparePage() {
               <Layers className="w-8 h-8" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-stone-900">No Machinery Selected for Comparison</h3>
+              <h3 className="text-2xl font-black text-stone-900">{t('compare.emptyTitle', 'No Machinery Selected for Comparison')}</h3>
               <p className="text-sm text-stone-600 leading-relaxed max-w-md mx-auto">
-                Select up to 4 machines from the fleet below or browse the marketplace to compare rates, distance, and AI compatibility.
+                {t('compare.emptyDesc', 'Select up to 4 machines from the fleet below or browse the marketplace to compare rates, distance, and AI compatibility.')}
               </p>
             </div>
 
             {/* Quick Add Suggestions */}
             <div className="pt-4 border-t border-stone-100 text-left">
               <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3 text-center">
-                Quick-Add Popular Equipment to Compare:
+                {t('compare.quickAdd', 'Quick-Add Popular Equipment to Compare:')}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
                 {allMachines.slice(0, 4).map(m => (
@@ -133,13 +129,13 @@ export function ComparePage() {
                       />
                       <div className="truncate">
                         <div className="text-xs font-bold text-stone-900 truncate">{m.name}</div>
-                        <div className="text-[11px] text-stone-500">₹{m.hourlyRate}/hr • {m.distanceKm} km</div>
+                        <div className="text-[11px] text-stone-500">₹{m.hourlyRate}/{t('card.perHour', 'hour')} • {m.distanceKm} km</div>
                       </div>
                     </div>
                     <button
                       onClick={() => addToCompare(m.id)}
-                      className="p-1.5 rounded-lg bg-emerald-800 text-white hover:bg-emerald-700 transition-colors shrink-0"
-                      title="Add to comparison"
+                      className="p-1.5 rounded-lg bg-emerald-800 text-white hover:bg-emerald-700 transition-colors shrink-0 cursor-pointer"
+                      title={t('compare.add', 'Add to comparison')}
                       aria-label={`Add ${m.name} to comparison`}
                     >
                       <Plus className="w-4 h-4" />
@@ -154,7 +150,7 @@ export function ComparePage() {
                 to="/find-machinery"
                 className="px-6 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2"
               >
-                <span>Browse All Available Machinery</span>
+                <span>{t('compare.browseAll', 'Browse All Available Machinery')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -167,7 +163,7 @@ export function ComparePage() {
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>
-                    You have selected <strong>1 machine</strong>. Pick 1 to 3 more machines to compare side-by-side.
+                    {t('compare.oneSelectedMsg', 'You have selected 1 machine. Pick 1 to 3 more machines to compare side-by-side.')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -175,10 +171,10 @@ export function ComparePage() {
                     <button
                       key={m.id}
                       onClick={() => addToCompare(m.id)}
-                      className="px-3 py-1 bg-white border border-amber-300 rounded-lg text-amber-900 font-bold hover:bg-amber-100 transition-colors flex items-center gap-1"
+                      className="px-3 py-1 bg-white border border-amber-300 rounded-lg text-amber-900 font-bold hover:bg-amber-100 transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
-                      <span>{m.name.split(' ')[0]} {m.type}</span>
+                      <span>{m.name.split(' ')[0]} {translateMachineType(m.type)}</span>
                     </button>
                   ))}
                 </div>
@@ -196,8 +192,8 @@ export function ComparePage() {
                 {/* Column 0: Headers */}
                 <div className="p-4 sm:p-5 bg-stone-50/70 space-y-6 text-xs font-bold text-stone-500 uppercase tracking-wider">
                   <div className="h-64 flex flex-col justify-end pb-3 border-b border-stone-200">
-                    <span className="text-stone-800 font-extrabold text-sm">Machinery Profile</span>
-                    <span className="text-[11px] text-stone-500 font-normal">Model, owner & category</span>
+                    <span className="text-stone-800 font-extrabold text-sm">{t('compare.colProfile', 'Machinery Profile')}</span>
+                    <span className="text-[11px] text-stone-500 font-normal">{t('compare.colProfileSub', 'Model, owner & category')}</span>
                   </div>
 
                   {/* Feature Rows Labels */}
@@ -205,48 +201,48 @@ export function ComparePage() {
                     <div className="h-28 flex flex-col justify-center border-b border-stone-100 pb-2">
                       <span className="text-emerald-900 font-extrabold flex items-center gap-1">
                         <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                        AI Smart Match
+                        {t('ai.title', 'AI Smart Match')}
                       </span>
-                      <span className="text-[10px] text-stone-500 font-normal">Transparent prototype score</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('ai.prototypeLabel', 'Transparent prototype score')}</span>
                     </div>
 
                     <div className="h-16 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Rental Rates</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Hourly & Daily Pricing</span>
+                      <span className="text-stone-800">{t('card.rentalRate', 'Rental Rates')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.hourlyDaily', 'Hourly & Daily Pricing')}</span>
                     </div>
 
                     <div className="h-16 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Distance & Transit</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Proximity to your field</span>
+                      <span className="text-stone-800">{t('ai.distance', 'Distance & Transit')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.fieldProximity', 'Proximity to your field')}</span>
                     </div>
 
                     <div className="h-14 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Availability</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Operational booking slot</span>
+                      <span className="text-stone-800">{t('ai.availability', 'Availability')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.slotStatus', 'Operational booking slot')}</span>
                     </div>
 
                     <div className="h-14 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Reliability & Reviews</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Owner & equipment rating</span>
+                      <span className="text-stone-800">{t('ai.reliability', 'Reliability & Reviews')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.ownerScore', 'Owner & equipment rating')}</span>
                     </div>
 
                     <div className="h-20 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Work Suitability</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Tested agricultural tasks</span>
+                      <span className="text-stone-800">{t('ai.workSuitability', 'Work Suitability')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.tasksLabel', 'Tested agricultural tasks')}</span>
                     </div>
 
                     <div className="h-14 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Farm Size Fit</span>
-                      <span className="text-[10px] text-stone-500 font-normal">Acreage compatibility</span>
+                      <span className="text-stone-800">{t('ai.farmSizeFit', 'Farm Size Fit')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.acreageCompat', 'Acreage compatibility')}</span>
                     </div>
 
                     <div className="h-24 flex flex-col justify-center border-b border-stone-100 pb-2">
-                      <span className="text-stone-800">Engine & Specs</span>
-                      <span className="text-[10px] text-stone-500 font-normal">HP, capacity & year</span>
+                      <span className="text-stone-800">{t('compare.engineSpecs', 'Engine & Specs')}</span>
+                      <span className="text-[10px] text-stone-500 font-normal">{t('compare.specsSub', 'HP, capacity & year')}</span>
                     </div>
 
                     <div className="h-14 flex flex-col justify-center">
-                      <span className="text-stone-800">Direct Booking</span>
+                      <span className="text-stone-800">{t('compare.directBooking', 'Direct Booking')}</span>
                     </div>
                   </div>
                 </div>
@@ -268,11 +264,11 @@ export function ComparePage() {
                       {isRecommended && (
                         <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-800 to-emerald-900 text-white text-[11px] font-extrabold uppercase tracking-wider py-1 px-3 text-center flex items-center justify-center gap-1.5 shadow-xs">
                           <Award className="w-3.5 h-3.5 text-amber-300" />
-                          <span>AI Top Recommendation</span>
+                          <span>{t('compare.topRecommended', 'AI Top Recommendation')}</span>
                         </div>
                       )}
 
-                      {/* Header Section (Machine Image, Name, Actions) */}
+                      {/* Header Section */}
                       <div className={`h-64 flex flex-col justify-between border-b border-stone-200 pb-4 ${isRecommended ? 'pt-5' : ''}`}>
                         <div className="relative rounded-xl overflow-hidden h-32 bg-stone-100 border border-stone-200 group">
                           <img
@@ -282,14 +278,14 @@ export function ComparePage() {
                           />
                           <button
                             onClick={() => removeFromCompare(machine.id)}
-                            className="absolute top-2 right-2 bg-stone-900/80 hover:bg-rose-600 text-white p-1 rounded-full backdrop-blur-xs transition-colors"
-                            title="Remove from comparison"
+                            className="absolute top-2 right-2 bg-stone-900/80 hover:bg-rose-600 text-white p-1 rounded-full backdrop-blur-xs transition-colors cursor-pointer"
+                            title={t('compare.remove', 'Remove from comparison')}
                             aria-label={`Remove ${machine.name}`}
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
                           <div className="absolute bottom-1.5 left-2 bg-stone-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                            {machine.type}
+                            {translateMachineType(machine.type)}
                           </div>
                         </div>
 
@@ -303,7 +299,7 @@ export function ComparePage() {
                           </Link>
                           <p className="text-xs text-stone-500 truncate">{machine.model}</p>
                           <p className="text-xs text-stone-600 mt-1">
-                            Owner: <strong>{machine.ownerName}</strong>
+                            {t('card.owner', 'Owner')}: <strong>{machine.ownerName}</strong>
                           </p>
                         </div>
                       </div>
@@ -315,21 +311,24 @@ export function ComparePage() {
                           <div className="flex items-center justify-between mb-1">
                             <button
                               onClick={() => setBreakdownMachine(machine)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-900 text-white font-extrabold hover:bg-emerald-800 transition-colors shadow-xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-900 text-white font-extrabold hover:bg-emerald-800 transition-colors shadow-xs cursor-pointer"
                             >
                               <Sparkles className="w-3 h-3 text-amber-400" />
-                              <span>{score.overallScore}% Match</span>
+                              <span>{score.overallScore}% {t('ai.match', 'Match')}</span>
                             </button>
-                            <span className="text-[10px] text-emerald-800 font-bold underline cursor-pointer" onClick={() => setBreakdownMachine(machine)}>
-                              View Breakdown
+                            <span
+                              className="text-[10px] text-emerald-800 font-bold underline cursor-pointer"
+                              onClick={() => setBreakdownMachine(machine)}
+                            >
+                              {t('compare.viewBreakdown', 'View Breakdown')}
                             </span>
                           </div>
 
                           <div className="grid grid-cols-2 gap-1 text-[10px] text-stone-600 mt-1.5 bg-stone-50 p-2 rounded-lg border border-stone-200">
-                            <div>Avail: <strong className="text-stone-900">{score.availabilityScore}%</strong></div>
-                            <div>Price: <strong className="text-stone-900">{score.priceScore}%</strong></div>
-                            <div>Dist: <strong className="text-stone-900">{score.distanceScore}%</strong></div>
-                            <div>Reliab: <strong className="text-stone-900">{score.reliabilityScore}%</strong></div>
+                            <div>{t('ai.availShort', 'Avail')}: <strong className="text-stone-900">{score.availabilityScore}%</strong></div>
+                            <div>{t('ai.priceShort', 'Price')}: <strong className="text-stone-900">{score.priceScore}%</strong></div>
+                            <div>{t('ai.distShort', 'Dist')}: <strong className="text-stone-900">{score.distanceScore}%</strong></div>
+                            <div>{t('ai.reliabShort', 'Reliab')}: <strong className="text-stone-900">{score.reliabilityScore}%</strong></div>
                           </div>
                         </div>
 
@@ -339,15 +338,15 @@ export function ComparePage() {
                             <span className="text-base font-black text-emerald-950">
                               ₹{machine.hourlyRate.toLocaleString()}
                             </span>
-                            <span className="text-[11px] text-stone-500">/ hour</span>
+                            <span className="text-[11px] text-stone-500">/ {t('card.perHour', 'hour')}</span>
                             {isLowestPrice && (
                               <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
-                                Lowest Rate
+                                {t('compare.lowestRate', 'Lowest Rate')}
                               </span>
                             )}
                           </div>
                           <div className="text-[11px] text-stone-600 font-medium">
-                            Full Day: ₹{machine.dailyRate.toLocaleString()}
+                            {t('card.dailyRate', 'Full Day')}: ₹{machine.dailyRate.toLocaleString()}
                           </div>
                         </div>
 
@@ -355,10 +354,10 @@ export function ComparePage() {
                         <div className="h-16 flex flex-col justify-center border-b border-stone-100 pb-2">
                           <div className="flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                            <span className="font-extrabold text-stone-900">{machine.distanceKm} km away</span>
+                            <span className="font-extrabold text-stone-900">{machine.distanceKm} km {t('card.distanceAway', 'away')}</span>
                             {isNearest && (
                               <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-blue-100 text-blue-800">
-                                Nearest
+                                {t('compare.nearest', 'Nearest')}
                               </span>
                             )}
                           </div>
@@ -376,11 +375,11 @@ export function ComparePage() {
                               }`}
                             />
                             <span className={`font-bold ${machine.isAvailable ? 'text-emerald-800' : 'text-stone-600'}`}>
-                              {machine.isAvailable ? 'Available Now' : 'Currently Booked'}
+                              {machine.isAvailable ? t('card.available', 'Available Now') : t('card.booked', 'Currently Booked')}
                             </span>
                           </div>
                           <div className="text-[10px] text-stone-500 mt-0.5">
-                            {machine.availableDates.length} upcoming slots listed
+                            {machine.availableDates.length} {t('compare.slotsListed', 'upcoming slots listed')}
                           </div>
                         </div>
 
@@ -389,10 +388,10 @@ export function ComparePage() {
                           <div className="flex items-center gap-1">
                             <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                             <span className="font-bold text-stone-900">{machine.rating}</span>
-                            <span className="text-stone-500 text-[11px]">({machine.reviewCount} reviews)</span>
+                            <span className="text-stone-500 text-[11px]">({machine.reviewCount} {t('nav.reviews', 'reviews')})</span>
                           </div>
                           <div className="text-[10px] text-stone-500 mt-0.5">
-                            Owner score: <strong>{machine.ownerRating}★</strong> • Reliability: {score.reliabilityScore}%
+                            {t('card.owner', 'Owner')}: <strong>{machine.ownerRating}★</strong> • {t('ai.reliability', 'Reliability')}: {score.reliabilityScore}%
                           </div>
                         </div>
 
@@ -404,7 +403,7 @@ export function ComparePage() {
                                 key={w}
                                 className="text-[10px] font-medium bg-stone-100 text-stone-800 px-1.5 py-0.5 rounded border border-stone-200"
                               >
-                                {w}
+                                {translateWorkType(w)}
                               </span>
                             ))}
                             {machine.suitableWork.length > 3 && (
@@ -416,20 +415,20 @@ export function ComparePage() {
                         {/* 7. Farm Size Fit */}
                         <div className="h-14 flex flex-col justify-center border-b border-stone-100 pb-2">
                           <span className="font-bold text-stone-900">
-                            {machine.suitableFarmSize.minAcres} – {machine.suitableFarmSize.maxAcres} Acres
+                            {machine.suitableFarmSize.minAcres} – {machine.suitableFarmSize.maxAcres} {t('ai.acresWord', 'Acres')}
                           </span>
                           <span className="text-[10px] text-stone-500">
-                            Suitability Index: {score.farmSizeSuitabilityScore}%
+                            {t('compare.suitabilityIndex', 'Suitability Index')}: {score.farmSizeSuitabilityScore}%
                           </span>
                         </div>
 
                         {/* 8. Engine & Specs */}
                         <div className="h-24 flex flex-col justify-center border-b border-stone-100 pb-2 space-y-0.5 text-[11px]">
-                          <div>Power: <strong>{machine.specs.hp || 'Standard'}</strong></div>
-                          <div>Fuel: <strong>{machine.specs.fuelType || 'Diesel'}</strong></div>
-                          <div>Year: <strong>{machine.specs.year || '2023'}</strong></div>
+                          <div>{t('details.power', 'Power')}: <strong>{machine.specs.hp || 'Standard'}</strong></div>
+                          <div>{t('details.fuel', 'Fuel')}: <strong>{machine.specs.fuelType || 'Diesel'}</strong></div>
+                          <div>{t('details.year', 'Year')}: <strong>{machine.specs.year || '2023'}</strong></div>
                           <div className="truncate text-stone-500" title={machine.specs.condition}>
-                            Condition: {machine.specs.condition || 'Field Ready'}
+                            {t('details.condition', 'Condition')}: {machine.specs.condition || 'Field Ready'}
                           </div>
                         </div>
 
@@ -437,10 +436,10 @@ export function ComparePage() {
                         <div className="h-14 flex items-center justify-center pt-2">
                           <button
                             onClick={() => setBookingMachine(machine)}
-                            className="w-full py-2.5 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                            className="w-full py-2.5 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                            <span>Book This Machine</span>
+                            <span>{t('compare.bookThisMachine', 'Book This Machine')}</span>
                           </button>
                         </div>
                       </div>

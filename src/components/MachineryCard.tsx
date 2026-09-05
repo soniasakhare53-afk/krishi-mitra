@@ -5,6 +5,7 @@ import { calculateSmartMatch } from '../services/smartMatch';
 import { toggleFavourite, isFavourite } from '../services/storage';
 import { useCompare } from '../context/CompareContext';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 import { MatchBreakdownModal } from './MatchBreakdownModal';
 import { BookingModal } from './BookingModal';
 import {
@@ -12,10 +13,7 @@ import {
   MapPin,
   Sparkles,
   Heart,
-  Calendar,
   Layers,
-  CheckCircle2,
-  Clock,
   ArrowRight,
   Info,
 } from 'lucide-react';
@@ -24,9 +22,11 @@ interface MachineryCardProps {
   key?: React.Key;
   machine: Machine;
   searchCriteria?: SearchCriteria;
+  onBook?: (machine: Machine) => void;
 }
 
-export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
+export function MachineryCard({ machine, searchCriteria, onBook }: MachineryCardProps) {
+  const { t, translateMachineType, translateWorkType } = useLanguage();
   const [favourited, setFavourited] = useState<boolean>(() => isFavourite(machine.id));
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -43,10 +43,10 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
     const newState = toggleFavourite(machine.id);
     setFavourited(newState);
     showToast(
-      newState ? 'Saved to Favourites' : 'Removed from Favourites',
-      `${machine.name} updated in your saved equipment list.`,
+      newState ? t('card.favSaved', 'Saved to Favourites') : t('card.favRemoved', 'Removed from Favourites'),
+      `${machine.name}`,
       'info',
-      2500
+      2000
     );
   };
 
@@ -55,14 +55,22 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
     e.stopPropagation();
     if (inCompare) {
       removeFromCompare(machine.id);
-      showToast('Removed from Comparison', `${machine.name} removed.`, 'info', 2000);
+      showToast(t('compare.removed', 'Removed from Comparison'), `${machine.name}`, 'info', 2000);
     } else {
       const added = addToCompare(machine.id);
       if (added) {
-        showToast('Added to Compare', `${machine.name} added. Select up to 4 machines.`, 'success', 2500);
+        showToast(t('compare.added', 'Added to Compare'), `${machine.name}`, 'success', 2000);
       } else {
-        showToast('Comparison Limit', 'You can compare up to 4 machines at once.', 'error', 3000);
+        showToast(t('compare.limitReached', 'Comparison Limit'), t('compare.limitDesc', 'You can compare up to 4 machines at once.'), 'error', 2500);
       }
+    }
+  };
+
+  const handleBookClick = () => {
+    if (onBook) {
+      onBook(machine);
+    } else {
+      setShowBookingModal(true);
     }
   };
 
@@ -87,12 +95,12 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
           {/* 1. AI Match Badge (Top-Left) */}
           <button
             onClick={() => setShowMatchModal(true)}
-            className="absolute top-3 left-3 bg-emerald-950/90 hover:bg-emerald-900 text-white backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-400/40 shadow-md flex items-center gap-1.5 transition-transform hover:scale-105"
-            title="Click to view AI Smart Match — Prototype breakdown"
+            className="absolute top-3 left-3 bg-emerald-950/90 hover:bg-emerald-900 text-white backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-400/40 shadow-md flex items-center gap-1.5 transition-transform hover:scale-105 cursor-pointer"
+            title={t('ai.whyRecommended', 'Click to view AI match breakdown')}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-amber-300 font-black">{matchScore.overallScore}%</span>
-            <span className="text-[11px] text-emerald-100 font-semibold">AI Match</span>
+            <span className="text-[11px] text-emerald-100 font-semibold">{t('ai.match', 'AI Match')}</span>
             <Info className="w-3 h-3 text-emerald-300/80 ml-0.5" />
           </button>
 
@@ -101,12 +109,12 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
             {/* Favourite Button */}
             <button
               onClick={handleToggleFav}
-              className={`p-2 rounded-full backdrop-blur-md shadow-md transition-all ${
+              className={`p-2 rounded-full backdrop-blur-md shadow-md transition-all cursor-pointer ${
                 favourited
                   ? 'bg-rose-600 text-white hover:bg-rose-700'
                   : 'bg-white/90 text-stone-700 hover:bg-white hover:text-rose-600'
               }`}
-              title={favourited ? 'Saved in Favourites' : 'Save to Favourites'}
+              title={favourited ? t('card.favSaved', 'Saved in Favourites') : t('card.favSave', 'Save to Favourites')}
               aria-label="Save to Favourites"
             >
               <Heart className={`w-4 h-4 ${favourited ? 'fill-white' : ''}`} />
@@ -115,12 +123,12 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
             {/* Compare Button */}
             <button
               onClick={handleToggleCompare}
-              className={`p-2 rounded-full backdrop-blur-md shadow-md transition-all ${
+              className={`p-2 rounded-full backdrop-blur-md shadow-md transition-all cursor-pointer ${
                 inCompare
                   ? 'bg-amber-500 text-white hover:bg-amber-600'
                   : 'bg-white/90 text-stone-700 hover:bg-white hover:text-amber-600'
               }`}
-              title={inCompare ? 'Remove from Compare' : 'Add to Compare'}
+              title={inCompare ? t('compare.remove', 'Remove from Compare') : t('compare.add', 'Add to Compare')}
               aria-label="Compare"
             >
               <Layers className="w-4 h-4" />
@@ -130,7 +138,7 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
           {/* Machine Type Badge on Image Bottom Left */}
           <div className="absolute bottom-3 left-3">
             <span className="bg-stone-900/80 text-white px-2.5 py-0.5 rounded-md font-bold text-[11px] backdrop-blur-xs">
-              {machine.type}
+              {translateMachineType(machine.type)}
             </span>
           </div>
 
@@ -144,12 +152,12 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
               }`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${machine.isAvailable ? 'bg-emerald-300' : 'bg-stone-400'}`} />
-              <span>{machine.isAvailable ? 'Available Now' : 'Booked'}</span>
+              <span>{machine.isAvailable ? t('card.available', 'Available') : t('card.booked', 'Booked')}</span>
             </span>
           </div>
         </div>
 
-        {/* Card Content with Clear Visual Hierarchy: Name -> Distance -> Rating & Owner -> Price */}
+        {/* Card Content */}
         <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
           <div>
             {/* 2. Machine Name */}
@@ -160,14 +168,14 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
               <p className="text-xs text-stone-500 truncate mt-0.5">{machine.model}</p>
             </Link>
 
-            {/* 3. Distance & Location (Prominent) */}
+            {/* 3. Distance & Location */}
             <div className="flex items-center justify-between text-xs text-stone-600 mt-2.5 bg-stone-50 px-2.5 py-1.5 rounded-xl border border-stone-200/70">
               <div className="flex items-center gap-1.5 truncate">
                 <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                 <span className="truncate font-medium text-stone-700">{machine.location}</span>
               </div>
               <span className="font-extrabold text-emerald-800 shrink-0 text-xs">
-                {machine.distanceKm} km away
+                {machine.distanceKm} km {t('card.distanceAway', 'away')}
               </span>
             </div>
 
@@ -179,7 +187,7 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
                 <span className="text-[11px] text-stone-400 font-normal">({machine.reviewCount})</span>
               </div>
               <span className="text-xs text-stone-500 truncate max-w-[140px]" title={machine.ownerName}>
-                Owner: <strong className="text-stone-800 font-semibold">{machine.ownerName}</strong>
+                {t('card.owner', 'Owner')}: <strong className="text-stone-800 font-semibold">{machine.ownerName}</strong>
               </span>
             </div>
 
@@ -190,7 +198,7 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
                   key={tag}
                   className="text-[10px] font-medium bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200/50"
                 >
-                  {tag}
+                  {translateWorkType(tag)}
                 </span>
               ))}
               {machine.suitableWork.length > 2 && (
@@ -206,15 +214,15 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
             <div className="flex items-baseline justify-between">
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">
-                  Rental Rate
+                  {t('card.rentalRate', 'Rental Rate')}
                 </span>
                 <div className="text-emerald-950 font-black text-xl">
                   ₹{machine.hourlyRate.toLocaleString()}
-                  <span className="text-xs font-normal text-stone-500"> / hour</span>
+                  <span className="text-xs font-normal text-stone-500"> / {t('card.perHour', 'hour')}</span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-stone-400 block font-medium">Daily benchmark</span>
+                <span className="text-[10px] text-stone-400 block font-medium">{t('card.dailyRate', 'Daily Rate')}</span>
                 <span className="text-xs font-bold text-stone-700">₹{machine.dailyRate.toLocaleString()}</span>
               </div>
             </div>
@@ -224,13 +232,13 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
                 to={`/machinery/${machine.id}`}
                 className="py-2 px-3 text-center rounded-xl border border-stone-300 text-stone-700 hover:text-stone-950 hover:bg-stone-50 text-xs font-bold transition-colors"
               >
-                View Details
+                {t('card.viewDetails', 'View Details')}
               </Link>
               <button
-                onClick={() => setShowBookingModal(true)}
-                className="py-2 px-3 text-center rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-all shadow-xs hover:shadow-md flex items-center justify-center gap-1"
+                onClick={handleBookClick}
+                className="py-2 px-3 text-center rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-all shadow-xs hover:shadow-md flex items-center justify-center gap-1 cursor-pointer"
               >
-                <span>Book Now</span>
+                <span>{t('card.bookNow', 'Book Now')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -246,7 +254,11 @@ export function MachineryCard({ machine, searchCriteria }: MachineryCardProps) {
           onClose={() => setShowMatchModal(false)}
           onBookNow={() => {
             setShowMatchModal(false);
-            setShowBookingModal(true);
+            if (onBook) {
+              onBook(machine);
+            } else {
+              setShowBookingModal(true);
+            }
           }}
         />
       )}

@@ -7,6 +7,7 @@ interface AuthContextValue {
   isFarmer: boolean;
   isOwner: boolean;
   switchRole: (role: UserRole) => void;
+  login: (role: UserRole) => void;
   loginAsDemoFarmer: () => void;
   loginAsDemoOwner: () => void;
   updateProfile: (updates: Partial<User>) => void;
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isFarmer: user.role === 'farmer',
         isOwner: user.role === 'owner',
         switchRole,
+        login: switchRole,
         loginAsDemoFarmer,
         loginAsDemoOwner,
         updateProfile,

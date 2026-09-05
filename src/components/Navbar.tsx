@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSelector } from './LanguageSelector';
 import {
   Tractor,
   Menu,
@@ -10,24 +12,25 @@ import {
   LogOut,
   ChevronDown,
   Sparkles,
-  PhoneCall,
   Search,
 } from 'lucide-react';
 
 export function Navbar() {
   const { user, isFarmer, isOwner, logout, switchRole } = useAuth();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Find Machinery', path: '/find-machinery' },
-    { name: 'Rent Out Machinery', path: '/rent-machinery' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Reviews', path: '/reviews' },
-    { name: 'Contact Us', path: '/contact' },
+    { name: t('nav.home', 'Home'), path: '/' },
+    { name: t('nav.findMachinery', 'Find Machinery'), path: '/find-machinery' },
+    { name: t('nav.aiMatch', 'AI Match'), path: '/ai-match' },
+    { name: t('nav.rentMachinery', 'Rent Out Machinery'), path: '/rent-machinery' },
+    { name: t('nav.howItWorks', 'How It Works'), path: '/how-it-works' },
+    { name: t('nav.aboutUs', 'About Us'), path: '/about' },
+    { name: t('nav.reviews', 'Reviews'), path: '/reviews' },
+    { name: t('nav.contactUs', 'Contact Us'), path: '/contact' },
   ];
 
   return (
@@ -50,21 +53,40 @@ export function Navbar() {
                 </span>
               </div>
               <div className="text-[10px] text-stone-500 font-medium tracking-wide -mt-1 hidden sm:block">
-                Smart Farm Machinery Rentals
+                {t('home.heroBadge', 'Smart Farm Machinery Rentals')}
               </div>
             </div>
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <div className="hidden xl:flex items-center gap-1">
             {navLinks.map(link => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  `px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors ${
                     isActive
-                      ? 'text-emerald-800 bg-emerald-50 font-semibold'
+                      ? 'text-emerald-800 bg-emerald-50 font-bold'
+                      : 'text-stone-700 hover:text-emerald-800 hover:bg-stone-50'
+                  }`
+                }
+              >
+                {link.name}
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Medium screen navigation subset */}
+          <div className="hidden lg:flex xl:hidden items-center gap-1">
+            {navLinks.slice(0, 5).map(link => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                className={({ isActive }) =>
+                  `px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive
+                      ? 'text-emerald-800 bg-emerald-50 font-bold'
                       : 'text-stone-700 hover:text-emerald-800 hover:bg-stone-50'
                   }`
                 }
@@ -75,15 +97,19 @@ export function Navbar() {
           </div>
 
           {/* Right Action Items */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 lg:gap-3">
+            {/* Language Selector Dropdown */}
+            <LanguageSelector variant="header" />
+
             {/* Emergency Broadcast Shortcut */}
             <Link
               to="/emergency"
-              className="flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 px-2.5 py-1.5 rounded-lg transition-colors animate-pulse"
-              title="Request emergency farm machinery assistance"
+              className="flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 px-2.5 py-1.5 rounded-xl transition-colors"
+              title={t('nav.emergencyBroadcast', 'Emergency Machinery Request')}
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-              <span>🚨 Emergency Request</span>
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
+              <span className="hidden xl:inline">{t('nav.emergencyBroadcast', 'Emergency Request')}</span>
+              <span className="xl:hidden">🚨 {t('emergency.title', 'Emergency')}</span>
             </Link>
 
             {/* Dashboard / User Section */}
@@ -91,7 +117,7 @@ export function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-stone-200 hover:border-emerald-300 bg-stone-50 hover:bg-emerald-50/50 transition-colors text-stone-800"
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-stone-200 hover:border-emerald-300 bg-stone-50 hover:bg-emerald-50/50 transition-colors text-stone-800 cursor-pointer"
                 >
                   <img
                     src={user.avatar || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150'}
@@ -99,51 +125,51 @@ export function Navbar() {
                     className="w-7 h-7 rounded-full object-cover border border-emerald-600/30"
                   />
                   <div className="text-left leading-tight hidden sm:block">
-                    <div className="text-xs font-bold text-stone-900 truncate max-w-[110px]">{user.name}</div>
+                    <div className="text-xs font-bold text-stone-900 truncate max-w-[100px]">{user.name}</div>
                     <div className="text-[10px] text-emerald-700 font-semibold capitalize flex items-center gap-1">
-                      {isFarmer ? '👨‍🌾 Farmer' : '🚜 Owner'}
+                      {isFarmer ? `👨‍🌾 ${t('reviews.roleFarmer', 'Farmer')}` : `🚜 ${t('reviews.roleOwner', 'Owner')}`}
                     </div>
                   </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-stone-500" />
+                  <ChevronDown className="w-3 h-3 text-stone-500" />
                 </button>
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-stone-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
                     <div className="px-4 py-2 border-b border-stone-100">
-                      <p className="text-xs text-stone-500">Signed in as</p>
-                      <p className="text-sm font-semibold text-stone-900 truncate">{user.name}</p>
-                      <p className="text-xs text-emerald-700 font-medium">{user.email}</p>
+                      <p className="text-[10px] uppercase font-bold text-stone-400">{t('nav.profile', 'Account Profile')}</p>
+                      <p className="text-xs font-bold text-stone-900 truncate">{user.name}</p>
+                      <p className="text-[11px] text-emerald-700 font-medium">{user.email}</p>
                     </div>
 
                     <Link
                       to={isFarmer ? '/farmer-dashboard' : '/owner-dashboard'}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 font-medium"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold"
                     >
                       <LayoutDashboard className="w-4 h-4 text-emerald-600" />
-                      {isFarmer ? 'Farmer Dashboard' : 'Owner Dashboard'}
+                      {isFarmer ? t('nav.farmerDashboard', 'Farmer Dashboard') : t('nav.ownerDashboard', 'Owner Dashboard')}
                     </Link>
 
                     <Link
                       to="/find-machinery"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-800"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold"
                     >
                       <Search className="w-4 h-4 text-stone-500" />
-                      Find Machinery
+                      {t('nav.findMachinery', 'Find Machinery')}
                     </Link>
 
                     <Link
                       to="/rent-machinery"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-stone-700 hover:bg-emerald-50 hover:text-emerald-800"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold"
                     >
                       <Tractor className="w-4 h-4 text-stone-500" />
-                      List Machinery
+                      {t('nav.rentMachinery', 'Rent Out Machinery')}
                     </Link>
 
                     <div className="border-t border-stone-100 my-1"></div>
@@ -153,10 +179,10 @@ export function Navbar() {
                         switchRole(isFarmer ? 'owner' : 'farmer');
                         setUserDropdownOpen(false);
                       }}
-                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs text-stone-600 hover:bg-stone-50"
+                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs text-stone-600 hover:bg-stone-50 cursor-pointer font-medium"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                      Switch to {isFarmer ? 'Machinery Owner Mode' : 'Farmer Mode'}
+                      {isFarmer ? `Switch to ${t('reviews.roleOwner', 'Owner Mode')}` : `Switch to ${t('reviews.roleFarmer', 'Farmer Mode')}`}
                     </button>
 
                     <button
@@ -165,10 +191,10 @@ export function Navbar() {
                         setUserDropdownOpen(false);
                         navigate('/');
                       }}
-                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50"
+                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 cursor-pointer font-semibold"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      Sign Out
+                      {t('nav.logout', 'Sign Out')}
                     </button>
                   </div>
                 )}
@@ -177,15 +203,15 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-3.5 py-2 text-sm font-semibold text-stone-700 hover:text-emerald-800 hover:bg-stone-50 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-bold text-stone-700 hover:text-emerald-800 hover:bg-stone-50 rounded-xl transition-colors"
                 >
-                  Login / Sign Up
+                  {t('nav.login', 'Login')}
                 </Link>
                 <Link
-                  to="/find-machinery"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-800 hover:bg-emerald-900 rounded-xl shadow-xs transition-colors"
+                  to="/login"
+                  className="px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 rounded-xl shadow-xs transition-colors"
                 >
-                  Get Started
+                  {t('nav.getStarted', 'Get Started')}
                 </Link>
               </div>
             )}
@@ -193,25 +219,27 @@ export function Navbar() {
             {/* Primary CTA */}
             <Link
               to={isFarmer ? '/find-machinery' : '/rent-machinery'}
-              className="px-4 py-2 text-sm font-semibold text-white bg-emerald-800 hover:bg-emerald-900 rounded-xl shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
+              className="px-3.5 py-2 text-xs font-black text-white bg-emerald-800 hover:bg-emerald-900 rounded-xl shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 shrink-0"
             >
-              {isFarmer ? 'Book Machinery' : 'List Machinery'}
+              {isFarmer ? t('card.bookNow', 'Book Machinery') : t('nav.rentMachinery', 'List Machinery')}
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu & Language Button */}
           <div className="flex items-center gap-2 lg:hidden">
+            <LanguageSelector variant="header" />
+
             <Link
               to="/emergency"
-              className="p-2 text-rose-700 bg-rose-50 rounded-lg border border-rose-200"
-              title="Emergency"
+              className="p-2 text-rose-700 bg-rose-50 rounded-xl border border-rose-200"
+              title={t('emergency.title', 'Emergency')}
             >
               <AlertTriangle className="w-4 h-4 text-rose-600" />
             </Link>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-stone-600 hover:text-emerald-800 hover:bg-stone-100 rounded-lg transition-colors"
+              className="p-2 text-stone-600 hover:text-emerald-800 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -222,17 +250,20 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-6 space-y-3 shadow-xl">
-          <div className="grid grid-cols-1 gap-1 pt-2">
+        <div className="lg:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-6 space-y-4 shadow-xl animate-in slide-in-from-top-2 duration-150">
+          {/* Mobile Language Selector */}
+          <LanguageSelector variant="mobile" />
+
+          <div className="grid grid-cols-1 gap-1 pt-1 border-t border-stone-100">
             {navLinks.map(link => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${
+                  `px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                     isActive
-                      ? 'text-emerald-800 bg-emerald-50 font-semibold'
+                      ? 'text-emerald-800 bg-emerald-50 font-bold'
                       : 'text-stone-700 hover:text-emerald-800 hover:bg-stone-50'
                   }`
                 }
@@ -242,39 +273,39 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="pt-4 border-t border-stone-200 flex flex-col gap-2.5">
+          <div className="pt-3 border-t border-stone-200 flex flex-col gap-2.5">
             <Link
               to={isFarmer ? '/farmer-dashboard' : '/owner-dashboard'}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-50 text-emerald-800 font-semibold text-sm border border-emerald-200"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200"
             >
               <LayoutDashboard className="w-4 h-4" />
-              {isFarmer ? 'Farmer Dashboard' : 'Owner Dashboard'}
+              {isFarmer ? t('nav.farmerDashboard', 'Farmer Dashboard') : t('nav.ownerDashboard', 'Owner Dashboard')}
             </Link>
 
             <Link
               to="/emergency"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-rose-50 text-rose-700 font-semibold text-sm border border-rose-200"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-rose-50 text-rose-700 font-bold text-xs border border-rose-200"
             >
               <AlertTriangle className="w-4 h-4" />
-              🚨 Emergency Machinery Broadcast
+              🚨 {t('nav.emergencyBroadcast', 'Emergency Request')}
             </Link>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2.5 px-4 rounded-xl border border-stone-300 text-stone-700 font-semibold text-sm hover:bg-stone-50"
+                className="flex-1 text-center py-2.5 px-4 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50"
               >
-                Login / Switch
+                {t('nav.login', 'Login')} / {t('nav.signUp', 'Sign Up')}
               </Link>
               <Link
                 to="/find-machinery"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex-1 text-center py-2.5 px-4 rounded-xl bg-emerald-800 text-white font-semibold text-sm hover:bg-emerald-900 shadow-sm"
+                className="flex-1 text-center py-2.5 px-4 rounded-xl bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 shadow-sm"
               >
-                Get Started
+                {t('nav.getStarted', 'Get Started')}
               </Link>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   getMachines,
   getBookings,
@@ -14,25 +15,20 @@ import { Machine, Booking } from '../types';
 import {
   Tractor,
   CheckCircle2,
-  XCircle,
   Clock,
-  TrendingUp,
   DollarSign,
   Plus,
   Trash2,
   Power,
   Calendar,
-  Layers,
-  MapPin,
-  Phone,
   BarChart3,
   AlertCircle,
-  Eye,
 } from 'lucide-react';
 
 export function OwnerDashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { t, translateMachineType, translateWorkType, translateStatus } = useLanguage();
 
   const [machines, setMachines] = useState<Machine[]>(() => getMachines());
   const [bookings, setBookings] = useState<Booking[]>(() => getBookings());
@@ -81,8 +77,8 @@ export function OwnerDashboard() {
     const updated = updateBookingStatus(bookingId, 'Confirmed');
     if (updated) {
       showToast(
-        'Booking Accepted!',
-        `Accepted booking for ${updated.farmerName}. Status is now CONFIRMED.`,
+        t('owner.acceptedToast', 'Booking Accepted!'),
+        `${t('owner.acceptedToastDesc', 'Accepted booking for')} ${updated.farmerName}.`,
         'success'
       );
       refreshData();
@@ -93,16 +89,16 @@ export function OwnerDashboard() {
   const handleReject = (bookingId: string) => {
     const updated = updateBookingStatus(bookingId, 'Cancelled');
     if (updated) {
-      showToast('Booking Rejected', 'Reservation request was cancelled.', 'info');
+      showToast(t('owner.rejectedToast', 'Booking Rejected'), t('owner.rejectedToastDesc', 'Reservation request was cancelled.'), 'info');
       refreshData();
     }
   };
 
   // Handle Machine Delete
   const handleDeleteMachine = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
+    if (window.confirm(`${t('owner.deleteConfirm', 'Are you sure you want to delete')} ${name}?`)) {
       deleteMachine(id);
-      showToast('Machine Deleted', `${name} has been removed from your fleet.`, 'info');
+      showToast(t('owner.deletedToast', 'Machine Deleted'), `${name} ${t('owner.deletedToastDesc', 'has been removed from your fleet.')}`, 'info');
       refreshData();
     }
   };
@@ -110,14 +106,14 @@ export function OwnerDashboard() {
   // Handle Toggle Active/Inactive
   const handleToggleActive = (id: string) => {
     toggleMachineStatus(id);
-    showToast('Status Updated', 'Listing visibility updated in the marketplace.', 'info');
+    showToast(t('owner.statusUpdatedToast', 'Status Updated'), t('owner.statusUpdatedDesc', 'Listing visibility updated in the marketplace.'), 'info');
     refreshData();
   };
 
   // Handle Toggle Availability
   const handleToggleAvailability = (id: string) => {
     toggleMachineAvailability(id);
-    showToast('Availability Updated', 'Equipment availability calendar updated.', 'info');
+    showToast(t('owner.availUpdatedToast', 'Availability Updated'), t('owner.availUpdatedDesc', 'Equipment availability calendar updated.'), 'info');
     refreshData();
   };
 
@@ -128,21 +124,21 @@ export function OwnerDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-amber-600">
-              Machinery Owner Hub
+              {t('owner.hubTitle', 'Machinery Owner Hub')}
             </div>
-            <h1 className="text-3xl font-black text-stone-900 mt-0.5">Owner Dashboard</h1>
+            <h1 className="text-3xl font-black text-stone-900 mt-0.5">{t('nav.ownerDashboard', 'Owner Dashboard')}</h1>
             <p className="text-xs text-stone-500 mt-1">
-              Logged in as <strong>{user.name}</strong> • Equipment Fleet Manager
+              {t('nav.signedInAs', 'Logged in as')} <strong>{user.name}</strong> • {t('owner.fleetManager', 'Equipment Fleet Manager')}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               to="/rent-machinery"
-              className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>List New Machine</span>
+              <span>{t('owner.listNew', 'List New Machine')}</span>
             </Link>
           </div>
         </div>
@@ -152,55 +148,55 @@ export function OwnerDashboard() {
           {/* Total Machines */}
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Fleet</span>
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">{t('owner.totalFleet', 'Total Fleet')}</span>
               <Tractor className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-3xl font-black text-stone-900 mt-2">{myMachines.length}</div>
-            <div className="text-[11px] text-stone-500 mt-0.5">Registered machines</div>
+            <div className="text-[11px] text-stone-500 mt-0.5">{t('owner.registeredVehicles', 'Registered machines')}</div>
           </div>
 
           {/* Active Listings */}
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Active Listings</span>
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">{t('owner.activeListings', 'Active Listings')}</span>
               <Power className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="text-3xl font-black text-emerald-800 mt-2">
               {myMachines.filter(m => m.active).length}
             </div>
-            <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">Live on Marketplace</div>
+            <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">{t('owner.liveMarketplace', 'Live on Marketplace')}</div>
           </div>
 
           {/* Pending Requests */}
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Pending Requests</span>
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">{t('dash.pendingRequests', 'Pending Requests')}</span>
               <Clock className="w-4 h-4 text-amber-600" />
             </div>
             <div className="text-3xl font-black text-amber-600 mt-2">{pendingRequests.length}</div>
-            <div className="text-[11px] text-amber-700 font-semibold mt-0.5">Action Needed</div>
+            <div className="text-[11px] text-amber-700 font-semibold mt-0.5">{t('owner.actionNeeded', 'Action Needed')}</div>
           </div>
 
           {/* Accepted Bookings */}
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Accepted Bookings</span>
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">{t('owner.acceptedBookings', 'Accepted Bookings')}</span>
               <CheckCircle2 className="w-4 h-4 text-blue-600" />
             </div>
             <div className="text-3xl font-black text-blue-700 mt-2">{acceptedBookings.length}</div>
-            <div className="text-[11px] text-stone-500 mt-0.5">Scheduled / In-Field</div>
+            <div className="text-[11px] text-stone-500 mt-0.5">{t('owner.scheduledInField', 'Scheduled / In-Field')}</div>
           </div>
 
           {/* Estimated Earnings */}
           <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Estimated Earnings</span>
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">{t('owner.estimatedEarnings', 'Estimated Earnings')}</span>
               <DollarSign className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-2xl font-black text-emerald-950 mt-2 font-mono">
               ₹{totalEarnings.toLocaleString()}
             </div>
-            <div className="text-[11px] text-stone-400 mt-0.5">Prototype Demo Balance</div>
+            <div className="text-[11px] text-stone-400 mt-0.5">{t('owner.demoBalance', 'Prototype Demo Balance')}</div>
           </div>
         </div>
 
@@ -208,42 +204,42 @@ export function OwnerDashboard() {
         <div className="flex items-center gap-2 border-b border-stone-200 mb-6">
           <button
             onClick={() => setActiveTab('requests')}
-            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 ${
+            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 cursor-pointer ${
               activeTab === 'requests'
                 ? 'border-emerald-800 text-emerald-800'
                 : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
             <Clock className="w-4 h-4" />
-            <span>Booking Requests ({pendingRequests.length} pending)</span>
+            <span>{t('owner.bookingRequests', 'Booking Requests')} ({pendingRequests.length} {t('owner.pendingWord', 'pending')})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('machines')}
-            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 ${
+            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 cursor-pointer ${
               activeTab === 'machines'
                 ? 'border-emerald-800 text-emerald-800'
                 : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
             <Tractor className="w-4 h-4" />
-            <span>My Machinery ({myMachines.length})</span>
+            <span>{t('nav.myMachinery', 'My Machinery')} ({myMachines.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('earnings')}
-            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 ${
+            className={`pb-3 px-4 text-sm font-bold transition-colors border-b-2 flex items-center gap-2 cursor-pointer ${
               activeTab === 'earnings'
                 ? 'border-emerald-800 text-emerald-800'
                 : 'border-transparent text-stone-500 hover:text-stone-800'
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            <span>Earnings & Analytics</span>
+            <span>{t('owner.earningsAnalytics', 'Earnings & Analytics')}</span>
           </button>
         </div>
 
-        {/* TAB 1: OWNER BOOKING REQUESTS (Accept / Reject sync) */}
+        {/* TAB 1: OWNER BOOKING REQUESTS */}
         {activeTab === 'requests' && (
           <div className="space-y-4">
             {myBookings.length > 0 ? (
@@ -268,12 +264,12 @@ export function OwnerDashboard() {
                           <div className="flex items-center gap-2">
                             {isPending && (
                               <span className="text-[10px] font-black uppercase tracking-wider bg-amber-500 text-black px-2 py-0.5 rounded animate-pulse">
-                                NEW REQUEST
+                                {t('owner.newRequest', 'NEW REQUEST')}
                               </span>
                             )}
                             <h4 className="font-black text-base text-stone-900">{bk.machineName}</h4>
                             <span
-                              className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                              className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
                                 bk.status === 'Confirmed'
                                   ? 'bg-emerald-100 text-emerald-800'
                                   : bk.status === 'Completed'
@@ -283,13 +279,13 @@ export function OwnerDashboard() {
                                   : 'bg-amber-100 text-amber-900'
                               }`}
                             >
-                              ● {bk.status}
+                              ● {translateStatus(bk.status)}
                             </span>
                           </div>
 
                           <p className="text-xs text-stone-600">
-                            Farmer: <strong className="text-stone-900">{bk.farmerName}</strong> ({bk.farmerPhone}) •
-                            Location: {bk.farmerLocation}
+                            {t('nav.roleFarmer', 'Farmer')}: <strong className="text-stone-900">{bk.farmerName}</strong> ({bk.farmerPhone}) •
+                            {t('search.location', 'Location')}: {bk.farmerLocation}
                           </p>
 
                           <div className="text-xs text-stone-500 flex flex-wrap items-center gap-3 pt-0.5">
@@ -298,14 +294,14 @@ export function OwnerDashboard() {
                               {bk.date} at {bk.startTime}
                             </span>
                             <span>•</span>
-                            <span>Duration: <strong>{bk.durationHours} hours</strong></span>
+                            <span>{t('book.duration', 'Duration')}: <strong>{bk.durationHours} {t('card.perHour', 'hours')}</strong></span>
                             <span>•</span>
-                            <span>Work: {bk.workType} ({bk.farmAreaAcres} Acres)</span>
+                            <span>{t('book.workType', 'Work')}: {translateWorkType(bk.workType)} ({bk.farmAreaAcres} {t('ai.acresWord', 'Acres')})</span>
                           </div>
 
                           {bk.notes && (
                             <p className="text-xs text-amber-900 bg-amber-50/70 p-2 rounded-lg border border-amber-200/60 mt-1.5">
-                              💬 Farmer's note: "{bk.notes}"
+                              💬 {t('owner.farmerNote', "Farmer's note")}: "{bk.notes}"
                             </p>
                           )}
                         </div>
@@ -315,36 +311,35 @@ export function OwnerDashboard() {
                       <div className="flex items-center justify-between md:justify-end gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100">
                         <div className="text-left md:text-right">
                           <span className="text-[10px] uppercase font-bold text-stone-400 block">
-                            Estimated Payout
+                            {t('owner.estimatedPayout', 'Estimated Payout')}
                           </span>
                           <span className="text-xl font-black text-emerald-950 font-mono">
                             ₹{bk.totalAmount.toLocaleString()}
                           </span>
                           <span className="text-[10px] text-stone-500 block">
-                            (₹{bk.hourlyRate}/hr × {bk.durationHours}h)
+                            (₹{bk.hourlyRate}/{t('card.perHour', 'hr')} × {bk.durationHours}h)
                           </span>
                         </div>
 
-                        {/* Accept / Reject buttons (Section 24) */}
                         {isPending ? (
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleAccept(bk.id)}
-                              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1"
+                              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
                             >
                               <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-                              <span>Accept</span>
+                              <span>{t('owner.accept', 'Accept')}</span>
                             </button>
                             <button
                               onClick={() => handleReject(bk.id)}
-                              className="px-4 py-2 bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-rose-700 text-xs font-bold rounded-xl border border-stone-200 transition-colors"
+                              className="px-4 py-2 bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-rose-700 text-xs font-bold rounded-xl border border-stone-200 transition-colors cursor-pointer"
                             >
-                              Reject
+                              {t('owner.reject', 'Reject')}
                             </button>
                           </div>
                         ) : (
                           <div className="text-xs font-semibold text-stone-500 bg-stone-100 px-3 py-1.5 rounded-xl">
-                            {bk.status === 'Confirmed' ? '✓ Accepted & Scheduled' : bk.status}
+                            {bk.status === 'Confirmed' ? `✓ ${t('owner.acceptedScheduled', 'Accepted & Scheduled')}` : translateStatus(bk.status)}
                           </div>
                         )}
                       </div>
@@ -355,10 +350,9 @@ export function OwnerDashboard() {
             ) : (
               <div className="bg-white rounded-2xl border border-stone-200 p-10 text-center space-y-3">
                 <Clock className="w-10 h-10 text-stone-400 mx-auto" />
-                <h3 className="font-bold text-stone-800">No Booking Requests</h3>
+                <h3 className="font-bold text-stone-800">{t('owner.noRequests', 'No Booking Requests')}</h3>
                 <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                  When farmers request machinery rentals, you'll see instant reservation notices here to accept or
-                  reject.
+                  {t('owner.noRequestsDesc', "When farmers request machinery rentals, you'll see instant reservation notices here to accept or reject.")}
                 </p>
               </div>
             )}
@@ -370,13 +364,13 @@ export function OwnerDashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-stone-500">
-                Manage your machinery fleet ({myMachines.length} vehicles registered)
+                {t('owner.manageFleet', 'Manage your machinery fleet')} ({myMachines.length} {t('owner.vehiclesRegistered', 'vehicles registered')})
               </span>
               <Link
                 to="/rent-machinery"
-                className="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                + Add Another Machine
+                + {t('owner.addAnother', 'Add Another Machine')}
               </Link>
             </div>
 
@@ -395,54 +389,54 @@ export function OwnerDashboard() {
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
-                          {m.type}
+                          {translateMachineType(m.type)}
                         </span>
                         <span
                           className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                             m.active ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-600'
                           }`}
                         >
-                          {m.active ? 'Active' : 'Inactive'}
+                          {m.active ? t('owner.active', 'Active') : t('owner.inactive', 'Inactive')}
                         </span>
                       </div>
 
                       <h4 className="font-extrabold text-base text-stone-900">{m.name}</h4>
                       <p className="text-xs text-stone-500">{m.location}</p>
                       <div className="text-sm font-bold text-emerald-950 font-mono">
-                        ₹{m.hourlyRate}/hr • ₹{m.dailyRate}/day
+                        ₹{m.hourlyRate}/{t('card.perHour', 'hr')} • ₹{m.dailyRate}/{t('card.perDay', 'day')}
                       </div>
                     </div>
                   </div>
 
-                  {/* Machine Controls (Activate/Deactivate, Availability, Delete) */}
+                  {/* Machine Controls */}
                   <div className="pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs">
                     {/* Availability toggle */}
                     <button
                       onClick={() => handleToggleAvailability(m.id)}
-                      className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-colors ${
+                      className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
                         m.isAvailable
                           ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                           : 'bg-stone-100 text-stone-600 border border-stone-300'
                       }`}
-                      title="Toggle availability calendar status"
+                      title={t('owner.toggleAvailTitle', 'Toggle availability calendar status')}
                     >
                       <span className={`w-2 h-2 rounded-full ${m.isAvailable ? 'bg-emerald-600' : 'bg-stone-400'}`} />
-                      <span>{m.isAvailable ? 'Available' : 'Mark Busy'}</span>
+                      <span>{m.isAvailable ? t('owner.available', 'Available') : t('owner.markBusy', 'Mark Busy')}</span>
                     </button>
 
                     {/* Active/Inactive toggle */}
                     <button
                       onClick={() => handleToggleActive(m.id)}
-                      className="px-3 py-1.5 rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50 font-semibold"
+                      className="px-3 py-1.5 rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50 font-semibold cursor-pointer"
                     >
-                      {m.active ? 'Deactivate Listing' : 'Activate Listing'}
+                      {m.active ? t('owner.deactivateListing', 'Deactivate Listing') : t('owner.activateListing', 'Activate Listing')}
                     </button>
 
                     {/* Delete button */}
                     <button
                       onClick={() => handleDeleteMachine(m.id, m.name)}
-                      className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
-                      title="Delete machine"
+                      className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                      title={t('btn.delete', 'Delete machine')}
                       aria-label="Delete machine"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -454,65 +448,65 @@ export function OwnerDashboard() {
           </div>
         )}
 
-        {/* TAB 3: OWNER EARNINGS (Prototype Demo Data) */}
+        {/* TAB 3: OWNER EARNINGS */}
         {activeTab === 'earnings' && (
           <div className="space-y-6">
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
-                <span>Prototype Demo Data — Simulates real-time seasonal rental revenue payout</span>
+                <span>{t('owner.demoDataNotice', 'Prototype Demo Data — Simulates real-time seasonal rental revenue payout')}</span>
               </div>
               <span className="font-bold text-[10px] uppercase tracking-wider bg-amber-200/80 px-2 py-0.5 rounded">
-                Simulated Ledger
+                {t('owner.simulatedLedger', 'Simulated Ledger')}
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs">
                 <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-                  Total Seasonal Earnings
+                  {t('owner.seasonalEarnings', 'Total Seasonal Earnings')}
                 </span>
                 <div className="text-3xl font-black text-emerald-950 font-mono mt-2">
                   ₹{totalEarnings.toLocaleString()}
                 </div>
                 <div className="text-xs text-emerald-700 font-semibold mt-1">
-                  +18% from last harvest season
+                  +18% {t('owner.fromLastSeason', 'from last harvest season')}
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs">
                 <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-                  August 2026 Earnings
+                  {t('owner.monthlyEarnings', 'August 2026 Earnings')}
                 </span>
                 <div className="text-3xl font-black text-emerald-950 font-mono mt-2">
                   ₹{thisMonthEarnings.toLocaleString()}
                 </div>
-                <div className="text-xs text-stone-500 mt-1">From 4 fulfilled bookings</div>
+                <div className="text-xs text-stone-500 mt-1">{t('owner.fromFulfilled', 'From 4 fulfilled bookings')}</div>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs">
                 <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-                  Completed Rentals
+                  {t('dash.completedRentals', 'Completed Rentals')}
                 </span>
                 <div className="text-3xl font-black text-stone-900 mt-2">
                   {completedBookings.length + 8}
                 </div>
-                <div className="text-xs text-stone-500 mt-1">Average ₹2,650 / job</div>
+                <div className="text-xs text-stone-500 mt-1">{t('owner.averagePerJob', 'Average ₹2,650 / job')}</div>
               </div>
             </div>
 
             {/* Monthly Chart Visualization */}
             <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-xs space-y-4">
-              <h3 className="font-extrabold text-base text-stone-900">Monthly Revenue Trend (₹)</h3>
+              <h3 className="font-extrabold text-base text-stone-900">{t('owner.monthlyTrend', 'Monthly Revenue Trend (₹)')}</h3>
 
               <div className="h-44 flex items-end justify-between gap-4 pt-8 px-2 border-b border-stone-200">
                 {[
                   { month: 'Apr', amount: 8500, height: '40%' },
                   { month: 'May', amount: 12000, height: '55%' },
-                  { month: 'Jun (Sowing)', amount: 24000, height: '95%' },
+                  { month: 'Jun', amount: 24000, height: '95%' },
                   { month: 'Jul', amount: 15000, height: '65%' },
                   { month: 'Aug', amount: 18900, height: '80%' },
-                  { month: 'Sep (Forecast)', amount: 28000, height: '100%' },
+                  { month: 'Sep', amount: 28000, height: '100%' },
                 ].map(bar => (
                   <div key={bar.month} className="flex-1 flex flex-col items-center gap-2 group">
                     <span className="text-[10px] font-bold text-stone-500 opacity-0 group-hover:opacity-100 transition-opacity font-mono">

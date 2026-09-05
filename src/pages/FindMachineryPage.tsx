@@ -4,22 +4,17 @@ import { Machine, MachineType, SearchCriteria } from '../types';
 import { getMachines } from '../services/storage';
 import { calculateSmartMatch } from '../services/smartMatch';
 import { MachineryCard } from '../components/MachineryCard';
+import { useLanguage } from '../context/LanguageContext';
 import {
-  Search,
-  SlidersHorizontal,
   Sparkles,
   MapPin,
-  Calendar,
-  X,
-  Filter,
-  CheckCircle2,
   Tractor,
-  Layers,
   ArrowUpDown,
   RefreshCw,
 } from 'lucide-react';
 
 export function FindMachineryPage() {
+  const { t, translateMachineType, translateWorkType } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const [machines, setMachines] = useState<Machine[]>(() => getMachines());
 
@@ -39,9 +34,6 @@ export function FindMachineryPage() {
   const [minRating, setMinRating] = useState<number>(0);
   const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'bestMatch' | 'nearest' | 'lowestPrice' | 'highestRated'>('bestMatch');
-
-  // Mobile filters drawer
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Sync when storage changes
   useEffect(() => {
@@ -150,14 +142,13 @@ export function FindMachineryPage() {
         <div className="mb-6 space-y-2">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
             <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>AI-Powered Marketplace</span>
+            <span>{t('find.super', 'AI-Powered Marketplace')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
-            Find the Right Machinery for Your Farm
+            {t('find.title', 'Find the Right Machinery for Your Farm')}
           </h1>
           <p className="text-stone-600 text-sm max-w-2xl">
-            Compare rental rates, check machine availability, and review transparent AI compatibility scores before
-            booking.
+            {t('find.sub', 'Compare rental rates, check machine availability, and review transparent AI compatibility scores before booking.')}
           </p>
         </div>
 
@@ -167,7 +158,7 @@ export function FindMachineryPage() {
             {/* Location */}
             <div>
               <label htmlFor="search-location" className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">
-                Farm Location
+                {t('search.location', 'Farm Location')}
               </label>
               <div className="relative">
                 <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
@@ -185,7 +176,7 @@ export function FindMachineryPage() {
             {/* Machine Type */}
             <div>
               <label htmlFor="search-machine-type" className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">
-                Machine Type
+                {t('search.machineType', 'Machine Type')}
               </label>
               <select
                 id="search-machine-type"
@@ -193,21 +184,21 @@ export function FindMachineryPage() {
                 onChange={e => setMachineType(e.target.value as MachineType | 'All')}
                 className="w-full text-sm px-3 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-emerald-600 outline-none bg-white font-medium"
               >
-                <option value="All">All Categories</option>
-                <option value="Tractor">🚜 Tractor</option>
-                <option value="Harvester">🌾 Harvester</option>
-                <option value="Seed Drill">🌱 Seed Drill</option>
-                <option value="Rotavator">🔄 Rotavator</option>
-                <option value="Cultivator">🌿 Cultivator</option>
-                <option value="Irrigation">💧 Irrigation</option>
-                <option value="Other">🛠️ Other Equipment</option>
+                <option value="All">{t('cat.all', 'All Categories')}</option>
+                <option value="Tractor">🚜 {translateMachineType('Tractor')}</option>
+                <option value="Harvester">🌾 {translateMachineType('Harvester')}</option>
+                <option value="Seed Drill">🌱 {translateMachineType('Seed Drill')}</option>
+                <option value="Rotavator">🔄 {translateMachineType('Rotavator')}</option>
+                <option value="Cultivator">🌿 {translateMachineType('Cultivator')}</option>
+                <option value="Irrigation">💧 {translateMachineType('Irrigation')}</option>
+                <option value="Other">🛠️ {translateMachineType('Other')}</option>
               </select>
             </div>
 
             {/* Agricultural Work */}
             <div>
               <label htmlFor="search-work-type" className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">
-                Work Required
+                {t('search.workType', 'Work Required')}
               </label>
               <select
                 id="search-work-type"
@@ -215,13 +206,13 @@ export function FindMachineryPage() {
                 onChange={e => setWorkType(e.target.value)}
                 className="w-full text-sm px-3 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-emerald-600 outline-none bg-white font-medium"
               >
-                <option value="All">Any Work</option>
-                <option value="Ploughing">Ploughing</option>
-                <option value="Tilling">Tilling / Rotavation</option>
-                <option value="Harvesting">Harvesting</option>
-                <option value="Sowing">Sowing</option>
-                <option value="Haulage">Haulage</option>
-                <option value="Land Levelling">Land Levelling</option>
+                <option value="All">{t('cat.anyWork', 'Any Work')}</option>
+                <option value="Ploughing">{translateWorkType('Ploughing')}</option>
+                <option value="Tilling">{translateWorkType('Tilling')}</option>
+                <option value="Harvesting">{translateWorkType('Harvesting')}</option>
+                <option value="Sowing">{translateWorkType('Sowing')}</option>
+                <option value="Haulage">{translateWorkType('Haulage')}</option>
+                <option value="Land Levelling">{translateWorkType('Land Levelling')}</option>
               </select>
             </div>
 
@@ -229,7 +220,7 @@ export function FindMachineryPage() {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label htmlFor="search-acres" className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">
-                  Acres
+                  {t('search.farmArea', 'Acres')}
                 </label>
                 <input
                   id="search-acres"
@@ -242,7 +233,7 @@ export function FindMachineryPage() {
               </div>
               <div>
                 <label htmlFor="search-date" className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">
-                  Date
+                  {t('book.date', 'Date')}
                 </label>
                 <input
                   id="search-date"
@@ -259,7 +250,7 @@ export function FindMachineryPage() {
           <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-stone-600">Hourly Budget:</span>
+                <span className="text-xs font-semibold text-stone-600">{t('find.hourlyBudget', 'Hourly Budget')}:</span>
                 <input
                   type="range"
                   min="500"
@@ -269,7 +260,7 @@ export function FindMachineryPage() {
                   onChange={e => setBudget(Number(e.target.value))}
                   className="w-28 sm:w-36 accent-emerald-700 cursor-pointer"
                 />
-                <span className="text-xs font-bold text-emerald-800 font-mono">₹{budget}/hr</span>
+                <span className="text-xs font-bold text-emerald-800 font-mono">₹{budget}/{t('card.perHour', 'hr')}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -280,7 +271,7 @@ export function FindMachineryPage() {
                     onChange={e => setOnlyAvailable(e.target.checked)}
                     className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
                   />
-                  <span>Available Now Only</span>
+                  <span>{t('find.availableNowOnly', 'Available Now Only')}</span>
                 </label>
               </div>
             </div>
@@ -288,25 +279,25 @@ export function FindMachineryPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleResetFilters}
-                className="text-xs text-stone-500 hover:text-stone-800 underline flex items-center gap-1"
+                className="text-xs text-stone-500 hover:text-stone-800 underline flex items-center gap-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
-                Reset
+                {t('find.reset', 'Reset')}
               </button>
 
               <div className="flex items-center gap-1.5">
                 <ArrowUpDown className="w-3.5 h-3.5 text-stone-500" />
-                <label htmlFor="search-sort-by" className="text-xs font-semibold text-stone-600">Sort by:</label>
+                <label htmlFor="search-sort-by" className="text-xs font-semibold text-stone-600">{t('find.sortBy', 'Sort by:')}</label>
                 <select
                   id="search-sort-by"
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as any)}
                   className="text-xs font-bold text-stone-800 bg-stone-100 border border-stone-200 rounded-lg px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-emerald-600"
                 >
-                  <option value="bestMatch">🏆 Best AI Match</option>
-                  <option value="nearest">📍 Nearest First</option>
-                  <option value="lowestPrice">💰 Lowest Price</option>
-                  <option value="highestRated">⭐ Highest Rated</option>
+                  <option value="bestMatch">🏆 {t('find.sortBestMatch', 'Best AI Match')}</option>
+                  <option value="nearest">📍 {t('find.sortNearest', 'Nearest First')}</option>
+                  <option value="lowestPrice">💰 {t('find.sortLowestPrice', 'Lowest Price')}</option>
+                  <option value="highestRated">⭐ {t('find.sortHighestRated', 'Highest Rated')}</option>
                 </select>
               </div>
             </div>
@@ -316,12 +307,12 @@ export function FindMachineryPage() {
         {/* Results Counter and Tags */}
         <div className="flex items-center justify-between mb-4">
           <div className="text-xs font-bold text-stone-600">
-            Showing <strong className="text-stone-900">{filteredAndSortedMachines.length}</strong> matching machines
-            {location && <span> near <strong className="text-emerald-800">"{location}"</strong></span>}
-            {machineType !== 'All' && <span> in <strong>{machineType}s</strong></span>}
+            {t('find.showing', 'Showing')} <strong className="text-stone-900">{filteredAndSortedMachines.length}</strong> {t('find.matchingMachines', 'matching machines')}
+            {location && <span> {t('find.near', 'near')} <strong className="text-emerald-800">"{location}"</strong></span>}
+            {machineType !== 'All' && <span> {t('find.inCategory', 'in')} <strong>{translateMachineType(machineType)}</strong></span>}
           </div>
           <div className="text-xs text-stone-500 hidden sm:block">
-            Scores dynamically updated using KrishiMitra's AI prototype formula
+            {t('find.dynamicScores', 'Scores dynamically calculated using KrishiMitra’s transparent algorithm')}
           </div>
         </div>
 
@@ -337,22 +328,21 @@ export function FindMachineryPage() {
             ))}
           </div>
         ) : (
-          /* Empty State as requested in Section 39 */
+          /* Empty State */
           <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center max-w-xl mx-auto my-12 space-y-4">
             <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
               <Tractor className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-stone-900">No Machinery Found</h3>
+            <h3 className="text-xl font-bold text-stone-900">{t('find.emptyTitle', 'No Machinery Found')}</h3>
             <p className="text-sm text-stone-600 leading-relaxed">
-              No machinery found matching this location or filter criteria. Try increasing your search distance or
-              changing your machine category to see available equipment in neighboring clusters.
+              {t('find.emptyDesc', 'No machinery found matching this location or filter criteria. Try increasing your search distance or changing your machine category.')}
             </p>
             <div className="pt-2 flex items-center justify-center gap-3">
               <button
                 onClick={handleResetFilters}
-                className="px-5 py-2.5 rounded-xl bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 transition-colors shadow-sm"
+                className="px-5 py-2.5 rounded-xl bg-emerald-800 text-white font-bold text-xs hover:bg-emerald-900 transition-colors shadow-sm cursor-pointer"
               >
-                Reset All Filters
+                {t('find.resetAll', 'Reset All Filters')}
               </button>
             </div>
           </div>
